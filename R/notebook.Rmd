@@ -1,0 +1,74 @@
+---
+title: "Minecraft-Forge-Mod"
+author: "Nicolas Harrand"
+date: '2024-02-13'
+output: html_document
+---
+
+```{r init}
+library(tidyverse)
+library(lubridate)
+library(venn)
+library(xtable)
+library(stringdist)
+```
+
+
+```{r loadata}
+
+
+
+data <- read_csv("../data/mod-list.csv", col_names = T, col_types = cols())
+
+```
+
+```{r cleanup}
+
+data <- data %>% 
+  mutate(Created = mdy(str_remove(Created, ","))) %>% 
+  mutate(Updated = mdy(str_remove(Updated, ","))) %>%
+  mutate(Download_nb = parse_number(str_replace(str_replace(Download_nb, "M", "e6"), "K", "e3"))) %>%
+  mutate(Size = parse_number(str_replace(str_replace(str_replace(Size, " GB", "e9"), " MB", "e6"), " KB", "e3"))) %>%
+  mutate(Game_Version = as.factor(Game_Version))
+
+
+```
+
+```{r earlyViz}
+
+data %>% select(Created) %>% 
+  ggplot(aes(x = Created)) + 
+  geom_histogram(fill = "skyblue", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of creation date", x = "Creation date", y = "Frequency")
+
+
+
+data %>% select(Game_Version) %>% 
+  ggplot(aes(x = Game_Version)) + 
+  geom_histogram(binwidth = 0.5, fill = "skyblue", color = "black", alpha = 0.7, stat="count") +
+  labs(title =  "Distribution of creation game version", x = "Game Version", y = "Frequency") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+data %>% select(Download_nb) %>% 
+  ggplot(aes(x = Download_nb)) + 
+  geom_histogram(bins = 100) 
+  labs(title = "Distribution of #Downloads", x = "#Downloads", y = "Frequency")
+  
+  
+data %>% select(Size) %>% 
+  ggplot(aes(x = Size)) + 
+  geom_histogram(fill = "skyblue", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Size", x = "Size", y = "Frequency")
+
+```
+
+
+
+```{r test}
+
+
+stringdist("Eugene's Lance", data$Title, method = "lv")
+
+
+```
