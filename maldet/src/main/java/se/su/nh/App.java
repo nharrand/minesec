@@ -75,7 +75,7 @@ public class App {
         }
 
         File csv = new File(main.csv);
-        try (FileWriter fw = new FileWriter(csv)) {
+        try (FileWriter fw = new FileWriter(csv, true)) {
             if(main.printHeader) {
                 fw.write("Jar," + pl.printHeader() + "\n");
             }
