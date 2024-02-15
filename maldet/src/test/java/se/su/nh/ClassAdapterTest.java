@@ -6,6 +6,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -14,7 +15,7 @@ public class ClassAdapterTest {
 
     @Test
     public void testClassReading() throws IOException {
-        InputStream classFileInputStream = new FileInputStream(new File("src/test/resources/classes/se/su/malijar/payloads/NetworkAccess.class"));
+        InputStream classFileInputStream = Files.newInputStream(new File("src/test/resources/classes/se/su/malijar/payloads/NetworkAccess.class").toPath());
         PrefixList pl = new PrefixList(Arrays.asList("java/net", "java/io"));
 
         ClassReader cr = new ClassReader(classFileInputStream);
