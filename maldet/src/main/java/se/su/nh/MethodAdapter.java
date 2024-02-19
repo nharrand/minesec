@@ -19,16 +19,16 @@ class MethodAdapter extends MethodVisitor implements Opcodes {
     public void visitFieldInsn(final int opcode, final String owner, final String name, final String descriptor)
     {
         //processUsage(owner, name, descriptor);
-        pl.containsPrefix(descriptor);
-        pl.containsPrefix(owner);
+        //pl.containsPrefix(descriptor);
+        pl.containsPrefix(owner + "." + name);
         mv.visitFieldInsn(opcode, owner, name, descriptor);
     }
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, final String descriptor, boolean itf)
     {
-        pl.startWithPrefix(owner);
-        pl.startWithPrefix(descriptor);
+        pl.startWithPrefix(owner + "." + name);
+        //pl.startWithPrefix(descriptor);
         mv.visitMethodInsn(opcode, owner, name, descriptor, itf);
     }
 }
