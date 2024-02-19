@@ -6,10 +6,12 @@ import org.objectweb.asm.Opcodes;
 
 public class ClassAdapter extends ClassVisitor implements Opcodes {
     PrefixList pl;
+    String className;
 
-    protected ClassAdapter(ClassVisitor classVisitor, PrefixList pl) {
+    protected ClassAdapter(ClassVisitor classVisitor, PrefixList pl, String className) {
         super(Opcodes.ASM9, classVisitor);
         this.pl = pl;
+        this.className = className;
     }
 
 
@@ -18,7 +20,7 @@ public class ClassAdapter extends ClassVisitor implements Opcodes {
                                      final String desc, final String signature, final String[] exceptions) {
 
         MethodVisitor mv = cv.visitMethod(access, name, desc, signature, exceptions);
-        return mv == null ? null : new MethodAdapter(mv, pl);
+        return mv == null ? null : new MethodAdapter(mv, pl, className);
     }
 
 

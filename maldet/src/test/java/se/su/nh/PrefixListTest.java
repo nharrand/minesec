@@ -13,10 +13,10 @@ public class PrefixListTest {
 
     @Test
     public void startWithPrefix() {
-        assertFalse(pl.startWithPrefix("dfshdf"));
-        assertTrue(pl.startWithPrefix("ABC"));
-        assertTrue(pl.startWithPrefix("ABCD"));
-        assertTrue(pl.startWithPrefix("abcd"));
+        assertFalse(pl.startWithPrefix("dfshdf", "test"));
+        assertTrue(pl.startWithPrefix("ABC", "test"));
+        assertTrue(pl.startWithPrefix("ABCD", "test"));
+        assertTrue(pl.startWithPrefix("abcd", "test"));
 
         assertEquals("2,1,0", pl.print());
     }
