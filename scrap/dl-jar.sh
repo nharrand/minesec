@@ -20,7 +20,7 @@ function handle_dl_link() {
 while IFS= read foo
 do
 	handle_dl_link $foo
-done < <(tail -n +742 ../data/mod-list.csv | cut -d '"' -f 6)
+done < <(tail -n +7658 ../data/mod-list.csv | cut -d '"' -f 6)
 #done < <(tail -n +2 ../data/mod-list.csv | cut -d '"' -f 6)
 
 #handle_dl_link "/minecraft/mc-mods/keepcuriosinventory/download/4808940"
