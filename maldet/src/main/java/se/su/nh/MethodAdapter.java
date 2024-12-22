@@ -8,10 +8,12 @@ import java.util.List;
 
 class MethodAdapter extends MethodVisitor implements Opcodes {
     PrefixList pl;
+    String className;
 
-    public MethodAdapter(final MethodVisitor mv, PrefixList pl) {
+    public MethodAdapter(final MethodVisitor mv, PrefixList pl, String className) {
         super(ASM9, mv);
         this.pl = pl;
+        this.className = className;
     }
 
 
@@ -19,16 +21,16 @@ class MethodAdapter extends MethodVisitor implements Opcodes {
     public void visitFieldInsn(final int opcode, final String owner, final String name, final String descriptor)
     {
         //processUsage(owner, name, descriptor);
-        pl.containsPrefix(descriptor);
-        pl.containsPrefix(owner);
+        //pl.containsPrefix(descriptor);
+        pl.startWithPrefix(owner + "." + name, className);
         mv.visitFieldInsn(opcode, owner, name, descriptor);
     }
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, final String descriptor, boolean itf)
     {
-        pl.startWithPrefix(owner);
-        pl.startWithPrefix(descriptor);
+        pl.startWithPrefix(owner + "." + name, className);
+        //pl.startWithPrefix(descriptor);
         mv.visitMethodInsn(opcode, owner, name, descriptor, itf);
     }
 }

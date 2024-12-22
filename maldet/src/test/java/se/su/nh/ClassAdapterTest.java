@@ -16,12 +16,30 @@ public class ClassAdapterTest {
     @Test
     public void testClassReading() throws IOException {
         InputStream classFileInputStream = Files.newInputStream(new File("src/test/resources/classes/se/su/malijar/payloads/NetworkAccess.class").toPath());
-        PrefixList pl = new PrefixList(Arrays.asList("java/net", "java/io"));
+        PrefixList pl = new PrefixList(Arrays.asList("java/net/URL.openStream", "java/io/InputStreamReader.<init>"));
 
         ClassReader cr = new ClassReader(classFileInputStream);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-        ClassVisitor cv = new ClassAdapter(cw, pl);
+        ClassVisitor cv = new ClassAdapter(cw, pl, "NetworkAccess");
         cr.accept(cv, 0);
+
+        assertEquals("1,1",pl.print());
+
+        System.out.println(pl.printHeader());
+        System.out.println(pl.print());
+    }
+
+    @Test
+    public void testClassReading2() throws IOException {
+        InputStream classFileInputStream = Files.newInputStream(new File("src/test/resources/classes/se/su/malijar/DifferentLocations.class").toPath());
+        PrefixList pl = new PrefixList(Arrays.asList("java/lang/ClassLoader.loadClass"));
+
+        ClassReader cr = new ClassReader(classFileInputStream);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassVisitor cv = new ClassAdapter(cw, pl, "DifferentLocations");
+        cr.accept(cv, 0);
+
+        assertEquals("4",pl.print());
 
         System.out.println(pl.printHeader());
         System.out.println(pl.print());

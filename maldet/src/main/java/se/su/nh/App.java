@@ -26,9 +26,11 @@ public class App {
 
     @Parameter(names = "-h", description = "Help", help = true)
     private boolean help = false;
+    @Parameter(names = "-v", description = "Verbose")
+    private boolean verbose = false;
 
 
-    @Parameter(names = "-package-list", description = "(Mandatory) Comma separated list of package names to look for.")
+    @Parameter(names = "-package-list", description = "Comma separated list of package names to look for. If not provided, default will bbe used ")
     private String packageList;
 
     @Parameter(names = "-class-dir", description = "(Mandatory) Path to the directory holding the flassfiles to analyze")
@@ -46,7 +48,7 @@ public class App {
                 .build();
         jc.parse(args);
 
-        if (main.help || main.packageList == null || main.classDir == null|| main.csv == null) {
+        if (main.help || main.classDir == null|| (main.csv == null && !main.verbose)) {
             jc.usage();
             System.exit(-1);
         }
@@ -58,15 +60,20 @@ public class App {
                 new RegexFileFilter(".*.class"),
                 DirectoryFileFilter.DIRECTORY
         );
-        PrefixList pl = new PrefixList(Arrays.asList(main.packageList.split(",")));
+        PrefixList pl;
+        if(main.packageList == null) {
+            pl = PrefixList.getDefaultSuspiciousAPI();
+        } else {
+            pl = new PrefixList(Arrays.asList(main.packageList.split(",")));
+        }
         //list files
         for(File f: classes) {
             try (InputStream classFileInputStream = Files.newInputStream(f.toPath())) {
-                System.out.println(f.getName() + ": processed");
+                if(!main.verbose) System.out.println(f.getName() + ": processed");
 
                 ClassReader cr = new ClassReader(classFileInputStream);
                 ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-                ClassVisitor cv = new ClassAdapter(cw, pl);
+                ClassVisitor cv = new ClassAdapter(cw, pl, f.getName());
                 cr.accept(cv, 0);
 
             } catch (IOException e) {
@@ -74,14 +81,18 @@ public class App {
             }
         }
 
-        File csv = new File(main.csv);
-        try (FileWriter fw = new FileWriter(csv, true)) {
-            if(main.printHeader) {
-                fw.write("Jar," + pl.printHeader() + "\n");
+        if(main.verbose) {
+            System.out.println(pl.printDetails());
+        } else {
+            File csv = new File(main.csv);
+            try (FileWriter fw = new FileWriter(csv, true)) {
+                if (main.printHeader) {
+                    fw.write("Jar," + pl.printHeader() + "\n");
+                }
+                fw.append(classDir.getName()).append(",").append(pl.print()).append("\n");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            fw.append(classDir.getName()).append(",").append(pl.print()).append("\n");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -102,7 +113,7 @@ public class App {
                 try {
                     ClassReader cr = new ClassReader(classFileInputStream);
                     ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-                    ClassVisitor cv = new ClassAdapter(cw, pl);
+                    ClassVisitor cv = new ClassAdapter(cw, pl, entryName);
                     cr.accept(cv, 0);
 
                 } finally {

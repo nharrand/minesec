@@ -1,0 +1,23 @@
+# Sysdig
+
+https://github.com/annulen/sysdig-wiki/blob/master/How-to-Install-Sysdig-for-Linux.md
+https://github.com/draios/sysdig/tree/master/userspace/sysdig/chisels
+https://github.com/draios/sysdig/blob/master/userspace/sysdig/chisels/shellshock_detect.lua
+https://github.com/draios/sysdig/blob/master/userspace/sysdig/chisels/spy_file.lua
+https://github.com/draios/sysdig/blob/master/userspace/sysdig/chisels/spy_ip.lua
+
+
+```bash
+sudo docker run --rm -i -t --privileged --net=host \
+    -v /var/run/docker.sock:/host/var/run/docker.sock \
+    -v /dev:/host/dev \
+    -v /proc:/host/proc:ro \
+    -v /boot:/host/boot:ro \
+    -v /src:/src \
+    -v /lib/modules:/host/lib/modules:ro \
+    -v /usr:/host/usr:ro \
+    -v /etc:/host/etc:ro \
+    docker.io/sysdig/sysdig
+```
+
+Check scap module
